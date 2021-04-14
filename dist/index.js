@@ -1,12 +1,29 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const person = {
-    name: 'tester',
-    age: 22,
-    gender: 'male',
+const CryptoJS = require("crypto-js");
+class Block {
+    constructor(index, hash, previousHash, data, timestamp) {
+        this.index = index;
+        this.hash = hash;
+        this.previousHash = previousHash;
+        this.data = data;
+        this.timestamp = timestamp;
+    }
+}
+Block.calculateBlockHash = (index, previousHash, timestamp, data) => CryptoJS.SHA256(index + previousHash + timestamp + data).toString();
+Block.calculateBlockHash;
+const genesisBlock = new Block(0, "2020202", "", "Hello", 123456);
+let blockChain = [genesisBlock];
+const getBlockchain = () => blockChain;
+const getLastestBlock = () => blockChain[blockChain.length - 1];
+const getNewTimeStamp = () => Math.round(new Date().getTime() / 1000);
+const createNewBlock = (data) => {
+    const previousBlock = getLastestBlock();
+    const newIndex = previousBlock.index + 1;
+    const newTimestamp = getNewTimeStamp();
+    const newHash = Block.calculateBlockHash(newIndex, previousBlock.hash, newTimestamp, data);
+    const newBlock = new Block(newIndex, newHash, previousBlock.hash, data, newTimestamp);
+    return newBlock;
 };
-const sayHi = (person) => {
-    return `hello ${person.name}, you are ${person.age}, you are a ${person.gender}`;
-};
-console.log(sayHi(person));
+console.log(createNewBlock("hello"), createNewBlock("bye bye"));
 //# sourceMappingURL=index.js.map
